@@ -9,6 +9,7 @@ import Foundation
 
 struct Weather: Codable {
     let current: Numbers
+    let location: Name
 }
 
 struct Numbers: Codable {
@@ -17,4 +18,8 @@ struct Numbers: Codable {
     let humidity: Int
     let feelslike_c: Double
     let feelslike_f: Double
+}
+
+struct Name: Codable {
+    let name: String
 }

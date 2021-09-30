@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		391F502C26FD69B30064FCA8 /* UIVIewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 391F502B26FD69B30064FCA8 /* UIVIewExtension.swift */; };
 		392AB57326F95EFA006381BA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB57226F95EFA006381BA /* AppDelegate.swift */; };
 		392AB57526F95EFA006381BA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB57426F95EFA006381BA /* SceneDelegate.swift */; };
 		392AB57726F95EFA006381BA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB57626F95EFA006381BA /* ViewController.swift */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		391F502B26FD69B30064FCA8 /* UIVIewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVIewExtension.swift; sourceTree = "<group>"; };
 		392AB56F26F95EFA006381BA /* weatherNoStoryboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = weatherNoStoryboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		392AB57226F95EFA006381BA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		392AB57426F95EFA006381BA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +45,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		391F502A26FD69A80064FCA8 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				391F502B26FD69B30064FCA8 /* UIVIewExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		392AB56626F95EFA006381BA = {
 			isa = PBXGroup;
 			children = (
@@ -62,6 +72,7 @@
 		392AB57126F95EFA006381BA /* weatherNoStoryboard */ = {
 			isa = PBXGroup;
 			children = (
+				391F502A26FD69A80064FCA8 /* Extensions */,
 				392AB58F26F96B68006381BA /* Models */,
 				392AB59326F96C2C006381BA /* Controllers */,
 				392AB58926F9601B006381BA /* Views */,
@@ -203,6 +214,7 @@
 			files = (
 				392AB57726F95EFA006381BA /* ViewController.swift in Sources */,
 				392AB59926F96CA7006381BA /* NetworkError.swift in Sources */,
+				391F502C26FD69B30064FCA8 /* UIVIewExtension.swift in Sources */,
 				392AB57326F95EFA006381BA /* AppDelegate.swift in Sources */,
 				392AB59626F96C3B006381BA /* WeatherController.swift in Sources */,
 				392AB58E26F96A3E006381BA /* Strings.swift in Sources */,
