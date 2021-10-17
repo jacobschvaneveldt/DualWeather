@@ -14,8 +14,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //MARK: - LIFECYCLES
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green2 )
         searchButton.addTarget(self, action: #selector(searchButtonPressed), for: .touchUpInside)
+        forecastButton.addTarget(self, action: #selector(forecastButtonPressed), for: .touchUpInside)
         addAllSubviews()
         setupSearchHorSV()
         locationManager.requestAlwaysAuthorization()
@@ -28,6 +29,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         callUsersLocation()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
     
     //MARK: - PROPERTIES
@@ -45,66 +49,116 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var locationLatAndLong: String?
     
     //MARK: - VIEWS
-    private let cTempLabel: UILabel = {
+    private let currentTempLabel: UILabel = {
         let lbl = UILabel()
-        lbl.backgroundColor = .blue
+    lbl.backgroundColor = .clear
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.textAlignment = .center
+        lbl.font = UIFont(name: weatherStrings.avenirHeavy, size: 500)
         
         return lbl
     }()
     
-    private let fTempLabel: UILabel = {
+    //----------------------------------------------
+    
+    private let currentFeelsLike: UILabel = {
         let lbl = UILabel()
-        lbl.backgroundColor = .red
+        lbl.backgroundColor = .clear
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.font = UIFont(name: weatherStrings.avenirLight, size: 24)
         
         return lbl
     }()
-
-    private let cFeelsLikeTempLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.backgroundColor = .link
+    
+    //----------------------------------------------
         
-        return lbl
-    }()
-
-    private let fFeelsLikeTempLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.backgroundColor = .systemPink
-        
-        return lbl
-    }()
-
     private let humidityLabel: UILabel = {
         let lbl = UILabel()
-        lbl.backgroundColor = .lightGray
+        lbl.backgroundColor = .clear
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
         
         return lbl
     }()
+    
+    //----------------------------------------------
+    
+    private let windSpeedLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.backgroundColor = .clear
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        
+        return lbl
+    }()
+    
+    //----------------------------------------------
     
     private let searchBarTF: UITextField = {
         let tf = UITextField()
-        tf.placeholder = weatherStrings.sbPlaceholder
+        tf.autocapitalizationType = UITextAutocapitalizationType.none
+        tf.attributedPlaceholder = NSAttributedString(string: weatherStrings.sbPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: UIColor(named: weatherStrings.colorScheme1Yellow)!])
+        tf.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)!
+        tf.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        tf.layer.cornerRadius = 25
+        tf.font = UIFont(name: weatherStrings.avenirMedium, size: 24)
         
         return tf
     }()
     
+    //----------------------------------------------
+    
     private let cityNameLabel: UILabel = {
         let lbl = UILabel()
-        lbl.backgroundColor = .blue
+        lbl.backgroundColor = .clear
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Green1)
+        lbl.font = UIFont(name: weatherStrings.avenirBook, size: 24)
+
         
         return lbl
     }()
     
+    //----------------------------------------------
+    
     private let searchButton: UIButton = {
-       let btn = UIButton()
+        let btn = UIButton()
         btn.setImage(UIImage(systemName: weatherStrings.searchButtonImageName), for: .normal)
         btn.tintColor = .black
-        btn.backgroundColor = .red
+        btn.backgroundColor = UIColor(named: weatherStrings.colorScheme1Yellow)
         btn.contentVerticalAlignment = .center
         btn.contentHorizontalAlignment = .center
         btn.sizeToFit()
+        btn.layer.cornerRadius = 25
+        btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 24)
+        return btn
+    }()
+    
+    //----------------------------------------------
+    
+    private let forecastButton: UIButton = {
+        let btn = UIButton()
+        btn.setTitleColor(UIColor(named: weatherStrings.colorScheme1Yellow), for: .normal)
+        btn.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
+        btn.contentVerticalAlignment = .center
+        btn.contentHorizontalAlignment = .left
+        btn.setTitle("forecast", for: .normal)
+        btn.sizeToFit()
+        btn.layer.cornerRadius = 24
+        btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 24)
         
         return btn
     }()
+    
+    //----------------------------------------------
+    
+    private let currentLabel: UILabel = {
+       let lbl = UILabel()
+        lbl.text = "current"
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.textAlignment = .center
+        
+        return lbl
+    }()
+    
+    //----------------------------------------------
     
     private let searchHorSV: UIStackView = {
         let sv = UIStackView()
@@ -113,95 +167,75 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         return sv
     }()
     
-    private let cHorSV: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .horizontal
+    //----------------------------------------------
+    
+    private let forecastButtonView: UIView = {
+       let view = UIView()
+        view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
         
-        return sv
+        return view
     }()
     
-    private let fHorSV: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .horizontal
+    //----------------------------------------------
+    
+    private let currentWeatherView: UIView = {
+       let view = UIView()
+        view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
+        view.layer.cornerRadius = 25
         
-        return sv
+        return view
     }()
     
     //MARK: - FUNCTIONS
     func addAllSubviews() {
+        view.addSubview(currentWeatherView)
         view.addSubview(humidityLabel)
         view.addSubview(searchHorSV)
-        view.addSubview(cHorSV)
-        view.addSubview(fHorSV)
         view.addSubview(cityNameLabel)
+        view.addSubview(forecastButtonView)
+        view.addSubview(forecastButton)
+        view.addSubview(currentLabel)
+        view.addSubview(currentTempLabel)
+        view.addSubview(currentFeelsLike)
+        view.addSubview(windSpeedLabel)
     }
     
     func setupViews() {
-        setupCHorSV()
-        setupFHorSV()
+        setupCurrentWeatherView()
+        setupForecastButton()
+        setupForecastButtonView()
         setupHumidityLabel()
         setupCityNameLabel()
         searchBarTF.text = ""
+        setupCurrentLabel()
+        setupCurrentTempLabel()
     }
     
     //----------------------------------------------
     
-    func setupCHorSV() {
-        cHorSV.addSubview(cTempLabel)
-        cHorSV.addSubview(cFeelsLikeTempLabel)
-        cHorSV.alignment = .fill
-        cHorSV.distribution = .fillProportionally
-        
-        cHorSV.anchor(top: searchHorSV.bottomAnchor, bottom: nil, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 16, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: view.frame.width, height: 50)
-        
-        setupCTempLabel()
-        setupCFeelsLikeLabel()
+    func setupCurrentTempLabel() {
+        let currentCTemp = Int(cTemp ?? 0)
+        let currentFTemp = Int(fTemp ?? 0)
+        currentTempLabel.text = "\(currentCTemp) | \(currentFTemp)"
+        currentTempLabel.adjustsFontSizeToFitWidth = true
+        currentTempLabel.anchor(top: currentLabel.bottomAnchor,
+                                bottom: nil,
+                                leading: currentWeatherView.leadingAnchor,
+                                trailing: currentWeatherView.trailingAnchor,
+                                paddingTop: view.frame.height / 30,
+                                paddingBottom: 0,
+                                paddingLeft: view.frame.width / 10,
+                                paddingRight: view.frame.width / 10,
+                                width: currentWeatherView.frame.width,
+                                height: 100)
     }
     
-    func setupCTempLabel() {
-        let number = Int(cTemp ?? 0)
-        cTempLabel.text = "C: \(number)"
-        cTempLabel.anchor(top: cHorSV.topAnchor, bottom: cHorSV.bottomAnchor, leading: cHorSV.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 100, height: cHorSV.frame.height)
-    }
-      
-    func setupCFeelsLikeLabel() {
-        let number = Int(cFeelsLike ?? 0)
-        cFeelsLikeTempLabel.text = "Feels like C: \(number)"
-        cFeelsLikeTempLabel.adjustsFontSizeToFitWidth = true
-        cFeelsLikeTempLabel.anchor(top: cHorSV.topAnchor, bottom: cHorSV.bottomAnchor, leading: nil, trailing: cHorSV.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 100, height: cHorSV.frame.height)
-    }
     
-    //----------------------------------------------
-    
-    func setupFHorSV() {
-        fHorSV.addSubview(fTempLabel)
-        fHorSV.addSubview(fFeelsLikeTempLabel)
-        fHorSV.alignment = .fill
-        fHorSV.distribution = .fillProportionally
-        
-        fHorSV.anchor(top: cHorSV.bottomAnchor, bottom: nil, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: view.frame.width, height: 50)
-        
-        setupFTempLabel()
-        setupFFeelsLikeLabel()
-    }
-    
-    func setupFTempLabel() {
-        let number = Int(fTemp ?? 0)
-        fTempLabel.text = "F: \(number)"
-        fTempLabel.anchor(top: fHorSV.topAnchor, bottom: fHorSV.bottomAnchor, leading: fHorSV.leadingAnchor, trailing: nil, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 100, height: fHorSV.frame.height)
-    }
-    
-    func setupFFeelsLikeLabel() {
-        let number = Int(fFeelsLike ?? 0)
-        fFeelsLikeTempLabel.text = "Feels like F: \(number)"
-        fFeelsLikeTempLabel.adjustsFontSizeToFitWidth = true
-        fFeelsLikeTempLabel.anchor(top: fHorSV.topAnchor, bottom: fHorSV.bottomAnchor, leading: nil, trailing: fHorSV.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 100, height: fHorSV.frame.height)
-    }
     
     //----------------------------------------------
     
     func setupHumidityLabel() {
-        humidityLabel.text = "Humidity: \(humidity ?? 0)"
+        humidityLabel.text = "humidity: \(humidity ?? 0)"
         humidityLabel.adjustsFontSizeToFitWidth = true
         humidityLabel.frame = CGRect(x: 100, y: 300, width: 100, height: 100)
     }
@@ -212,25 +246,118 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchHorSV.addSubview(searchBarTF)
         searchHorSV.addSubview(searchButton)
         
-        searchHorSV.anchor(top: view.safeAreaLayoutGuide.topAnchor, bottom: nil, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: view.frame.height, height: 50)
+        searchHorSV.anchor(top: view.safeAreaLayoutGuide.topAnchor,
+                           bottom: nil,
+                           leading: safeArea.leadingAnchor,
+                           trailing: safeArea.trailingAnchor,
+                           paddingTop: -10,
+                           paddingBottom: 0,
+                           paddingLeft: view.frame.width / 20,
+                           paddingRight: view.frame.width / 20,
+                           width: view.frame.width / 1.1,
+                           height: 50)
         
-        self.setupSearchBarTF()
         self.setupSearchButton()
+        self.setupSearchBarTF()
     }
     
     func setupSearchBarTF() {
-        searchBarTF.anchor(top: searchHorSV.topAnchor, bottom: searchHorSV.bottomAnchor, leading: searchHorSV.leadingAnchor, trailing: searchButton.leadingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0)
+        searchBarTF.anchor(top: searchHorSV.topAnchor,
+                           bottom: searchHorSV.bottomAnchor,
+                           leading: searchHorSV.leadingAnchor,
+                           trailing: searchHorSV.trailingAnchor,
+                           paddingTop: 0,
+                           paddingBottom: 0,
+                           paddingLeft: 0,
+                           paddingRight: 0)
     }
     
     func setupSearchButton() {
-        searchButton.anchor(top: searchHorSV.topAnchor, bottom: searchHorSV.bottomAnchor, leading: searchBarTF.trailingAnchor, trailing: searchHorSV.trailingAnchor, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0, width: 50, height: 50)
+        searchButton.anchor(top: searchHorSV.topAnchor,
+                            bottom: searchHorSV.bottomAnchor,
+                            leading: nil,
+                            trailing: searchBarTF.trailingAnchor,
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                            paddingLeft: 0,
+                            paddingRight: 0,
+                            width: 50,
+                            height: 50)
     }
     
     //----------------------------------------------
     
     func setupCityNameLabel() {
-        cityNameLabel.anchor(top: nil, bottom: safeArea.bottomAnchor, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 0, paddingBottom: 16, paddingLeft: 0, paddingRight: 0, width: 200 , height: 50)
-        cityNameLabel.text = cityName
+        cityNameLabel.anchor(top: nil,
+                             bottom: forecastButton.topAnchor,
+                             leading: safeArea.leadingAnchor,
+                             trailing: safeArea.trailingAnchor,
+                             paddingTop: 0,
+                             paddingBottom: 0,
+                             paddingLeft: view.frame.width / 20,
+                             paddingRight: 0,
+                             width: 200 ,
+                             height: 50)
+        
+        cityNameLabel.text = cityName?.lowercased()
+    }
+    
+    //----------------------------------------------
+    
+    func setupForecastButton() {
+        forecastButton.anchor(top: cityNameLabel.bottomAnchor,
+                              bottom: view.bottomAnchor,
+                              leading: safeArea.leadingAnchor,
+                              trailing: safeArea.trailingAnchor,
+                              paddingTop: 8,
+                              paddingBottom: -10,
+                              paddingLeft: view.frame.width / 20,
+                              paddingRight: view.frame.width / 20,
+                              width: view.frame.width,
+                              height: 50)
+    }
+    
+    func setupForecastButtonView() {
+        forecastButtonView.anchor(top: forecastButton.bottomAnchor,
+                                  bottom: view.bottomAnchor,
+                                  leading: safeArea.leadingAnchor,
+                                  trailing: safeArea.trailingAnchor,
+                                  paddingTop: -forecastButton.frame.height / 1.9,
+                                  paddingBottom: 0,
+                                  paddingLeft: view.frame.width / 20,
+                                  paddingRight: view.frame.width / 20,
+                                  width: view.frame.width,
+                                  height: 50)
+    }
+    
+    //----------------------------------------------
+    
+    func setupCurrentWeatherView() {
+        currentWeatherView.anchor(top: searchHorSV.bottomAnchor,
+                                  bottom: nil,
+                                  leading: safeArea.leadingAnchor,
+                                  trailing: safeArea.trailingAnchor,
+                                  paddingTop: 16,
+                                  paddingBottom: 0,
+                                  paddingLeft: view.frame.width / 20,
+                                  paddingRight:  view.frame.width / 20,
+                                  width: view.frame.width,
+                                  height: view.frame.height / 2)
+    }
+    
+    //----------------------------------------------
+    
+    func setupCurrentLabel() {
+        currentLabel.anchor(top: currentWeatherView.topAnchor,
+                            bottom: nil,
+                            leading: currentWeatherView.leadingAnchor,
+                            trailing: currentWeatherView.trailingAnchor,
+                            paddingTop: currentWeatherView.frame.height / 10,
+                            paddingBottom: 0,
+                            paddingLeft: view.frame.width / 3,
+                            paddingRight: view.frame.width / 3,
+                            width:  currentWeatherView.frame.width,
+                            height: 50)
     }
     
     //----------------------------------------------
@@ -247,7 +374,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.fFeelsLike = numbers.feelslike_f
                     self.humidity = numbers.humidity
                     self.setupViews()
-                    
+
                 case .failure(let error):
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
                 }
@@ -262,6 +389,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 case .success(let name):
                     self.cityName = name.name
                     self.setupViews()
+
+                case .failure(let error):
+                    print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
+                }
+            }
+        }
+    }
+    
+    func fetchForcast(searchTerm: String) {
+        WeatherController.shared.fetchForcast(searchTerm: searchTerm) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let forcastNumbers):
+                    print("------------------------THIS IS THE FORCAST NUMBERS \(forcastNumbers) ---------------------------")
                     
                 case .failure(let error):
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
@@ -282,6 +423,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchTerm = locationLatAndLong
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
+        fetchForcast(searchTerm: searchTerm!)
         setupViews()
     }
     
@@ -290,9 +432,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchTerm = self.searchBarTF.text
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
-        
+        fetchForcast(searchTerm: searchTerm!)
     }
     
-
+    @objc func forecastButtonPressed() {
+        print("You pushed the button congrats")
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
 }//End of class
-
