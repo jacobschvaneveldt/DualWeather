@@ -21,13 +21,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         setupSearchHorSV()
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
         }
-        
         callUsersLocation()
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
@@ -51,31 +49,32 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //MARK: - VIEWS
     private let currentTempLabel: UILabel = {
         let lbl = UILabel()
-    lbl.backgroundColor = .clear
+        lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
         lbl.textAlignment = .center
-        lbl.font = UIFont(name: weatherStrings.avenirHeavy, size: 500)
+        lbl.font = UIFont(name: weatherStrings.avenirHeavy, size: 300)
         
         return lbl
     }()
     
     //----------------------------------------------
     
-    private let currentFeelsLike: UILabel = {
+    private let currentFeelsLikeLabel: UILabel = {
         let lbl = UILabel()
         lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
-        lbl.font = UIFont(name: weatherStrings.avenirLight, size: 24)
+        lbl.font = UIFont(name: weatherStrings.avenirMedium, size: 18)
         
         return lbl
     }()
     
     //----------------------------------------------
-        
+    
     private let humidityLabel: UILabel = {
         let lbl = UILabel()
         lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.font = UIFont(name: weatherStrings.avenirMedium, size: 18)
         
         return lbl
     }()
@@ -86,6 +85,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let lbl = UILabel()
         lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.font = UIFont(name: weatherStrings.avenirMedium, size: 18)
         
         return lbl
     }()
@@ -110,8 +110,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let lbl = UILabel()
         lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Green1)
-        lbl.font = UIFont(name: weatherStrings.avenirBook, size: 24)
-
+        lbl.font = UIFont(name: weatherStrings.avenirBook, size: 48)
+        
         
         return lbl
     }()
@@ -142,7 +142,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         btn.setTitle("forecast", for: .normal)
         btn.sizeToFit()
         btn.layer.cornerRadius = 24
-        btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 24)
+        btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 36)
+        btn.titleLabel?.layoutMargins = UIEdgeInsets(top: 0, left: 100, bottom: 0, right: 0)
+        
         
         return btn
     }()
@@ -150,9 +152,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //----------------------------------------------
     
     private let currentLabel: UILabel = {
-       let lbl = UILabel()
+        let lbl = UILabel()
         lbl.text = "current"
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.font = UIFont(name: weatherStrings.avenirLight, size: 32)
         lbl.textAlignment = .center
         
         return lbl
@@ -170,7 +173,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //----------------------------------------------
     
     private let forecastButtonView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
         
         return view
@@ -179,9 +182,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //----------------------------------------------
     
     private let currentWeatherView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
-        view.layer.cornerRadius = 25
+        view.layer.cornerRadius = 64
         
         return view
     }()
@@ -189,26 +192,28 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //MARK: - FUNCTIONS
     func addAllSubviews() {
         view.addSubview(currentWeatherView)
-        view.addSubview(humidityLabel)
         view.addSubview(searchHorSV)
+        view.addSubview(windSpeedLabel)
         view.addSubview(cityNameLabel)
         view.addSubview(forecastButtonView)
         view.addSubview(forecastButton)
         view.addSubview(currentLabel)
         view.addSubview(currentTempLabel)
-        view.addSubview(currentFeelsLike)
-        view.addSubview(windSpeedLabel)
+        view.addSubview(currentFeelsLikeLabel)
+        view.addSubview(humidityLabel)
     }
     
     func setupViews() {
         setupCurrentWeatherView()
         setupForecastButton()
         setupForecastButtonView()
-        setupHumidityLabel()
+        setupWindSpeedLabel()
         setupCityNameLabel()
         searchBarTF.text = ""
         setupCurrentLabel()
         setupCurrentTempLabel()
+        setupCurrentFeelsLIkeLabel()
+        setupHumidityLabel()
     }
     
     //----------------------------------------------
@@ -217,27 +222,76 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let currentCTemp = Int(cTemp ?? 0)
         let currentFTemp = Int(fTemp ?? 0)
         currentTempLabel.text = "\(currentCTemp) | \(currentFTemp)"
+//        currentTempLabel.backgroundColor = .blue.red
         currentTempLabel.adjustsFontSizeToFitWidth = true
+        currentTempLabel.adjustsFontForContentSizeCategory = true
         currentTempLabel.anchor(top: currentLabel.bottomAnchor,
-                                bottom: nil,
+                                bottom: currentFeelsLikeLabel.topAnchor,
                                 leading: currentWeatherView.leadingAnchor,
                                 trailing: currentWeatherView.trailingAnchor,
-                                paddingTop: view.frame.height / 30,
+                                paddingTop: 0,
                                 paddingBottom: 0,
-                                paddingLeft: view.frame.width / 10,
-                                paddingRight: view.frame.width / 10,
-                                width: currentWeatherView.frame.width,
-                                height: 100)
+                                paddingLeft: view.frame.width / 6,
+                                paddingRight: view.frame.width / 6,
+                                width: view.frame.width / 2)
     }
     
     
     
     //----------------------------------------------
     
+    func setupCurrentFeelsLIkeLabel() {
+        let currentCTemp = Int(cFeelsLike ?? 0)
+        let currentFTemp = Int(fFeelsLike ?? 0)
+        
+        currentFeelsLikeLabel.text = "feels like: \(currentCTemp) | \(currentFTemp)"
+        currentFeelsLikeLabel.textAlignment = .center
+        currentFeelsLikeLabel.anchor(top: currentTempLabel.bottomAnchor,
+                                     bottom: humidityLabel.topAnchor,
+                                     leading: currentWeatherView.leadingAnchor,
+                                     trailing: currentWeatherView.trailingAnchor,
+                                     paddingTop: 16,
+                                     paddingBottom: -16,
+                                     paddingLeft: view.frame.width / 20,
+                                     paddingRight: view.frame.width / 20,
+                                     width: currentWeatherView.frame.width,
+                                     height: 18)
+    }
+    
+    //----------------------------------------------
+    
     func setupHumidityLabel() {
+        
         humidityLabel.text = "humidity: \(humidity ?? 0)"
-        humidityLabel.adjustsFontSizeToFitWidth = true
-        humidityLabel.frame = CGRect(x: 100, y: 300, width: 100, height: 100)
+        humidityLabel.textAlignment = .center
+        humidityLabel.anchor(top: nil,
+                             bottom: windSpeedLabel.topAnchor,
+                             leading: currentWeatherView.leadingAnchor,
+                             trailing: currentWeatherView.trailingAnchor,
+                             paddingTop: 0,
+                             paddingBottom: -16,
+                             paddingLeft: view.frame.width / 20,
+                             paddingRight: view.frame.width / 20,
+                             width: currentWeatherView.frame.width,
+                             height: 18)
+    }
+    
+    //----------------------------------------------
+    
+    func setupWindSpeedLabel() {
+        //JSWAN - make windspeed dynamic
+        windSpeedLabel.text = "wind speed: 0"
+        windSpeedLabel.textAlignment = .center
+        windSpeedLabel.anchor(top: nil,
+                              bottom: currentWeatherView.bottomAnchor,
+                              leading: currentWeatherView.leadingAnchor,
+                              trailing: currentWeatherView.trailingAnchor,
+                              paddingTop: 0,
+                              paddingBottom: -view.frame.height / 22,
+                              paddingLeft: view.frame.width / 20,
+                              paddingRight: view.frame.width / 20,
+                              width: currentWeatherView.frame.width,
+                              height: 18)
     }
     
     //----------------------------------------------
@@ -342,22 +396,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                   paddingLeft: view.frame.width / 20,
                                   paddingRight:  view.frame.width / 20,
                                   width: view.frame.width,
-                                  height: view.frame.height / 2)
+                                  height: view.frame.height / 2.5)
     }
     
     //----------------------------------------------
     
     func setupCurrentLabel() {
+        currentLabel.textAlignment = .center
+//        currentLabel.backgroundColor = .red
         currentLabel.anchor(top: currentWeatherView.topAnchor,
-                            bottom: nil,
+                            bottom: currentTempLabel.topAnchor,
                             leading: currentWeatherView.leadingAnchor,
                             trailing: currentWeatherView.trailingAnchor,
-                            paddingTop: currentWeatherView.frame.height / 10,
+                            paddingTop: view.frame.height / 30,
                             paddingBottom: 0,
-                            paddingLeft: view.frame.width / 3,
-                            paddingRight: view.frame.width / 3,
+                            paddingLeft: view.frame.width / 5,
+                            paddingRight: view.frame.width / 5,
                             width:  currentWeatherView.frame.width,
-                            height: 50)
+                            height: 32)
     }
     
     //----------------------------------------------
@@ -374,7 +430,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.fFeelsLike = numbers.feelslike_f
                     self.humidity = numbers.humidity
                     self.setupViews()
-
+                    
                 case .failure(let error):
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
                 }
@@ -389,7 +445,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 case .success(let name):
                     self.cityName = name.name
                     self.setupViews()
-
+                    
                 case .failure(let error):
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
                 }
