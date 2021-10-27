@@ -47,6 +47,7 @@ class WeatherController {
             do {
                 let tlo = try JSONDecoder().decode(Weather.self, from: data)
                 let numbers = tlo.current
+                print("arst \(numbers)")
                 
                 completion(.success(numbers))
             } catch {

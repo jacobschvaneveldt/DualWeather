@@ -19,6 +19,14 @@ struct CurrentWeatherNumbers: Codable {
     let humidity: Int
     let feelslike_c: Double
     let feelslike_f: Double
+    let wind_mph: Double
+    let wind_kph: Double
+    let wind_dir: String
+    let condition: Condition
+}
+
+struct Condition: Codable {
+    let text: String
 }
 
 struct Name: Codable {

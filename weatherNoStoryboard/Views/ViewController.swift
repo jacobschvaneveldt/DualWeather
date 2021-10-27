@@ -33,7 +33,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     //MARK: - PROPERTIES
-    let locationManager = CLLocationManager()
+    var locationManager = CLLocationManager()
     var cTemp: Double?
     var fTemp: Double?
     var cFeelsLike: Double?
@@ -45,6 +45,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var searchTerm: String?
     var cityName: String?
     var locationLatAndLong: String?
+    var windMph: Double?
+    var windKph: Double?
+    var windDirection: String?
     
     //MARK: - VIEWS
     private let currentTempLabel: UILabel = {
@@ -98,8 +101,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         tf.attributedPlaceholder = NSAttributedString(string: weatherStrings.sbPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: UIColor(named: weatherStrings.colorScheme1Yellow)!])
         tf.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)!
         tf.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
-        tf.layer.cornerRadius = 25
+        tf.layer.cornerRadius = 30
         tf.font = UIFont(name: weatherStrings.avenirMedium, size: 24)
+        tf.setLeftPaddingPoints(16)
         
         return tf
     }()
@@ -111,6 +115,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         lbl.backgroundColor = .clear
         lbl.textColor = UIColor(named: weatherStrings.colorScheme1Green1)
         lbl.font = UIFont(name: weatherStrings.avenirBook, size: 48)
+        lbl.adjustsFontSizeToFitWidth = true
         
         
         return lbl
@@ -126,7 +131,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         btn.contentVerticalAlignment = .center
         btn.contentHorizontalAlignment = .center
         btn.sizeToFit()
-        btn.layer.cornerRadius = 25
+        btn.layer.cornerRadius = 30
         btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 24)
         return btn
     }()
@@ -189,11 +194,31 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         return view
     }()
     
+    //----------------------------------------------
+    
+    private let windDirectionUIImage: UIImageView = {
+        let image = UIImageView()
+        image.tintColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        
+        return image
+    }()
+    
+    //----------------------------------------------
+    
+    private let windSV: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.backgroundColor = .red
+        
+        return sv
+    }()
+    
     //MARK: - FUNCTIONS
     func addAllSubviews() {
         view.addSubview(currentWeatherView)
         view.addSubview(searchHorSV)
         view.addSubview(windSpeedLabel)
+//        view.addSubview(windSV)
         view.addSubview(cityNameLabel)
         view.addSubview(forecastButtonView)
         view.addSubview(forecastButton)
@@ -201,12 +226,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(currentTempLabel)
         view.addSubview(currentFeelsLikeLabel)
         view.addSubview(humidityLabel)
+        view.addSubview(windDirectionUIImage)
     }
     
     func setupViews() {
         setupCurrentWeatherView()
         setupForecastButton()
         setupForecastButtonView()
+//        setupWindSV()
         setupWindSpeedLabel()
         setupCityNameLabel()
         searchBarTF.text = ""
@@ -222,18 +249,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let currentCTemp = Int(cTemp ?? 0)
         let currentFTemp = Int(fTemp ?? 0)
         currentTempLabel.text = "\(currentCTemp) | \(currentFTemp)"
-//        currentTempLabel.backgroundColor = .blue.red
+//        currentTempLabel.backgroundColor = .blue
         currentTempLabel.adjustsFontSizeToFitWidth = true
         currentTempLabel.adjustsFontForContentSizeCategory = true
+        currentTempLabel.textAlignment = .center
         currentTempLabel.anchor(top: currentLabel.bottomAnchor,
                                 bottom: currentFeelsLikeLabel.topAnchor,
                                 leading: currentWeatherView.leadingAnchor,
                                 trailing: currentWeatherView.trailingAnchor,
                                 paddingTop: 0,
                                 paddingBottom: 0,
-                                paddingLeft: view.frame.width / 6,
-                                paddingRight: view.frame.width / 6,
-                                width: view.frame.width / 2)
+                                paddingLeft: view.frame.width / 10,
+                                paddingRight: view.frame.width / 10)
     }
     
     
@@ -269,7 +296,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                              leading: currentWeatherView.leadingAnchor,
                              trailing: currentWeatherView.trailingAnchor,
                              paddingTop: 0,
-                             paddingBottom: -16,
+                             paddingBottom: -14,
                              paddingLeft: view.frame.width / 20,
                              paddingRight: view.frame.width / 20,
                              width: currentWeatherView.frame.width,
@@ -279,19 +306,100 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     //----------------------------------------------
     
     func setupWindSpeedLabel() {
-        //JSWAN - make windspeed dynamic
-        windSpeedLabel.text = "wind speed: 0"
+        let mphWind = Int(windMph ?? 0)
+        let kphWind = Int(windKph ?? 0)
+        var windDirectionImage = windDirection ?? ""
+        
+        switch windDirectionImage {
+        case "N":
+            windDirectionImage = "arrow.up.circle.fill"
+            print(windDirectionImage)
+            
+        case "NE":
+            windDirectionImage = "arrow.up.right.circle.fill"
+            print(windDirectionImage)
+            
+        case "E":
+            windDirectionImage = "arrow.right.circle.fill"
+            print(windDirectionImage)
+            
+        case "SE":
+            windDirectionImage = "arrow.down.right.circle.fill"
+            print(windDirectionImage)
+            
+        case "S":
+            windDirectionImage = "arrow.down.circle.fill"
+            print(windDirectionImage)
+            
+        case "SW":
+            windDirectionImage = "arrow.down.left.circle.fill"
+            print(windDirectionImage)
+            
+        case "W":
+            windDirectionImage = "arrow.left.circle.fill"
+            print(windDirectionImage)
+            
+        case "NW":
+            windDirectionImage = "arrow.up.left.circle.fill"
+            print(windDirectionImage)
+            
+        default:
+            windDirectionImage = "arrow.up.circle.fill"
+            print(windDirectionImage)
+        }
+        
+        let arrowImage = UIImage(systemName: windDirectionImage)
+        let coloredArrowImage = (arrowImage?.withTintColor(UIColor(named: weatherStrings.colorScheme1Yellow)!))!
+        let arrowAttachment = NSTextAttachment(image: coloredArrowImage)
+        
+        let attachmentString = NSAttributedString(attachment: arrowAttachment)
+        let myString = NSMutableAttributedString(string: "wind speed: \(kphWind) | \(mphWind) ")
+        myString.append(attachmentString)
+        
+        windSpeedLabel.attributedText = myString
         windSpeedLabel.textAlignment = .center
+//        windSpeedLabel.backgroundColor = .blue
+        windSpeedLabel.sizeToFit()
         windSpeedLabel.anchor(top: nil,
                               bottom: currentWeatherView.bottomAnchor,
                               leading: currentWeatherView.leadingAnchor,
                               trailing: currentWeatherView.trailingAnchor,
                               paddingTop: 0,
                               paddingBottom: -view.frame.height / 22,
-                              paddingLeft: view.frame.width / 20,
-                              paddingRight: view.frame.width / 20,
-                              width: currentWeatherView.frame.width,
-                              height: 18)
+                              paddingLeft: 0,
+                              paddingRight: 0,
+                              height: 20)
+        
+//        windDirectionUIImage.backgroundColor = .yellow
+//        windDirectionUIImage.anchor(top: nil,
+//                                    bottom: currentWeatherView.bottomAnchor,
+//                                    leading: windSpeedLabel.trailingAnchor,
+//                                    trailing: currentWeatherView.trailingAnchor,
+//                                    paddingTop: 0,
+//                                    paddingBottom: -view.frame.height / 22,
+//                                    paddingLeft: 0,
+//                                    paddingRight: 0,
+//                                    width: 18,
+//                                    height: 18)
+//        windDirectionUIImage.image = UIImage(systemName: windDirectionImage)
+    }
+    
+    func setupWindSV() {
+        windSV.addSubview(windSpeedLabel)
+        windSV.addSubview(windDirectionUIImage)
+        
+        windSV.anchor(top: nil,
+                      bottom: currentWeatherView.bottomAnchor,
+                      leading: currentWeatherView.leadingAnchor,
+                      trailing: nil,
+                      paddingTop: 0,
+                      paddingBottom: -view.frame.height / 22,
+                      paddingLeft: 0,
+                      paddingRight: 0,
+                      width: windSpeedLabel.frame.width + windDirectionUIImage.frame.width,
+                      height: 18)
+        windSV.alignment = .center
+        windSV.distribution = .equalSpacing
     }
     
     //----------------------------------------------
@@ -309,7 +417,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                            paddingLeft: view.frame.width / 20,
                            paddingRight: view.frame.width / 20,
                            width: view.frame.width / 1.1,
-                           height: 50)
+                           height: 60)
         
         self.setupSearchButton()
         self.setupSearchBarTF()
@@ -335,8 +443,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             paddingBottom: 0,
                             paddingLeft: 0,
                             paddingRight: 0,
-                            width: 50,
-                            height: 50)
+                            width: 60,
+                            height: 60)
     }
     
     //----------------------------------------------
@@ -347,12 +455,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                              leading: safeArea.leadingAnchor,
                              trailing: safeArea.trailingAnchor,
                              paddingTop: 0,
-                             paddingBottom: 0,
-                             paddingLeft: view.frame.width / 20,
-                             paddingRight: 0,
+                             paddingBottom: -view.frame.height / 90,
+                             paddingLeft: view.frame.width / 20 + 16,
+                             paddingRight: view.frame.width / 20,
                              width: 200 ,
-                             height: 50)
-        
+                             height: 60)
         cityNameLabel.text = cityName?.lowercased()
     }
     
@@ -364,11 +471,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                               leading: safeArea.leadingAnchor,
                               trailing: safeArea.trailingAnchor,
                               paddingTop: 8,
-                              paddingBottom: -10,
+                              paddingBottom: -8,
                               paddingLeft: view.frame.width / 20,
                               paddingRight: view.frame.width / 20,
                               width: view.frame.width,
-                              height: 50)
+                              height: 60)
+        forecastButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
     }
     
     func setupForecastButtonView() {
@@ -429,6 +537,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.cFeelsLike = numbers.feelslike_c
                     self.fFeelsLike = numbers.feelslike_f
                     self.humidity = numbers.humidity
+                    self.windKph = numbers.wind_kph
+                    self.windMph = numbers.wind_mph
+                    self.windDirection = numbers.wind_dir
                     self.setupViews()
                     
                 case .failure(let error):
@@ -479,16 +590,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchTerm = locationLatAndLong
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
-        fetchForcast(searchTerm: searchTerm!)
+//        fetchForcast(searchTerm: searchTerm!)
         setupViews()
-    }
+        locationManager.stopUpdatingLocation()
+        }
     
     @objc func searchButtonPressed() {
         guard self.searchBarTF.text != nil else {return}
         searchTerm = self.searchBarTF.text
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
-        fetchForcast(searchTerm: searchTerm!)
+        locationManager.stopUpdatingLocation()
+//        fetchForcast(searchTerm: searchTerm!)
     }
     
     @objc func forecastButtonPressed() {

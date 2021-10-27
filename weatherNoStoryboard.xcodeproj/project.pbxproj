@@ -17,6 +17,7 @@
 		392AB59226F96B7D006381BA /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB59126F96B7D006381BA /* Weather.swift */; };
 		392AB59626F96C3B006381BA /* WeatherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB59526F96C3B006381BA /* WeatherController.swift */; };
 		392AB59926F96CA7006381BA /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392AB59826F96CA7006381BA /* NetworkError.swift */; };
+		39748DD42728CF5900E6B710 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39748DD32728CF5900E6B710 /* UITextFieldExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		392AB59126F96B7D006381BA /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
 		392AB59526F96C3B006381BA /* WeatherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherController.swift; sourceTree = "<group>"; };
 		392AB59826F96CA7006381BA /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		39748DD32728CF5900E6B710 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				391F502B26FD69B30064FCA8 /* UIVIewExtension.swift */,
+				39748DD32728CF5900E6B710 /* UITextFieldExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				392AB57726F95EFA006381BA /* ViewController.swift in Sources */,
+				39748DD42728CF5900E6B710 /* UITextFieldExtension.swift in Sources */,
 				392AB59926F96CA7006381BA /* NetworkError.swift in Sources */,
 				391F502C26FD69B30064FCA8 /* UIVIewExtension.swift in Sources */,
 				392AB57326F95EFA006381BA /* AppDelegate.swift in Sources */,

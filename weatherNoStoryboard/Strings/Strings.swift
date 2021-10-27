@@ -49,3 +49,22 @@ struct weatherStrings {
     static let avenirMedium = "Avenir-Medium"
     static let avenirHeavy = "Avenir-Heavy"
 }
+
+struct iconStrings {
+    static let cloudMoonIcon = "cloudMoonIcon"
+    static let fogIcon = "fogIcon"
+    static let heavyThunderStormsIcon = "heavyThunderStormsIcon"
+    static let moonIcon = "moonIcon"
+    static let singleCloudIcon = "singleCloudIcon"
+    static let singleRainIcon = "singleRainIcon"
+    static let singleSnowFlakeIcon = "singleSnowFlakeIcon"
+    static let snowDotsIcon = "snowDotsIcon"
+    static let sunCloudIcon = "sunCloudIcon"
+    static let sunIcon = "sunIcon"
+    static let threeRainIcon = "threeRainIcon"
+    static let threeSnowFlakesIcon = "threeSnowFlakesIcon"
+    static let thunderStormIcon = "thunderStormIcon"
+    static let twoCloudsIcon = "twoCloudsIcon"
+    static let windCloudRainIcon = "windCloudRainIcon"
+    static let windIcon = "windIcon"
+}
