@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     //MARK: - LIFECYCLES
     override func viewDidLoad() {
@@ -48,6 +48,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var windMph: Double?
     var windKph: Double?
     var windDirection: String?
+    var weatherIconString: String?
     
     //MARK: - VIEWS
     private let currentTempLabel: UILabel = {
@@ -213,12 +214,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         return sv
     }()
     
+    //----------------------------------------------
+    
+    private let weatherStatusIcon: UIImageView = {
+       let iv = UIImageView()
+        
+        return iv
+    }()
+    
     //MARK: - FUNCTIONS
     func addAllSubviews() {
         view.addSubview(currentWeatherView)
         view.addSubview(searchHorSV)
         view.addSubview(windSpeedLabel)
-//        view.addSubview(windSV)
         view.addSubview(cityNameLabel)
         view.addSubview(forecastButtonView)
         view.addSubview(forecastButton)
@@ -227,29 +235,35 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(currentFeelsLikeLabel)
         view.addSubview(humidityLabel)
         view.addSubview(windDirectionUIImage)
+        view.addSubview(weatherStatusIcon)
     }
     
     func setupViews() {
         setupCurrentWeatherView()
+        setupCurrentTempLabel()
         setupForecastButton()
         setupForecastButtonView()
-//        setupWindSV()
         setupWindSpeedLabel()
         setupCityNameLabel()
         searchBarTF.text = ""
         setupCurrentLabel()
-        setupCurrentTempLabel()
         setupCurrentFeelsLIkeLabel()
         setupHumidityLabel()
+        setupStatusIcon()
     }
     
     //----------------------------------------------
-    
+    //JSWAN - get opinion on centered at line or all text centered
     func setupCurrentTempLabel() {
         let currentCTemp = Int(cTemp ?? 0)
         let currentFTemp = Int(fTemp ?? 0)
-        currentTempLabel.text = "\(currentCTemp) | \(currentFTemp)"
-//        currentTempLabel.backgroundColor = .blue
+        let numberOfCTempInts = intToStringCount(int: currentCTemp)
+        
+        if numberOfCTempInts == 1 {
+            currentTempLabel.text = "0\(currentCTemp) | \(currentFTemp)"
+        } else {
+            currentTempLabel.text = "\(currentCTemp) | \(currentFTemp)"
+        }
         currentTempLabel.adjustsFontSizeToFitWidth = true
         currentTempLabel.adjustsFontForContentSizeCategory = true
         currentTempLabel.textAlignment = .center
@@ -263,6 +277,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 paddingRight: view.frame.width / 10)
     }
     
+    func intToStringCount(int: Int) -> Int {
+        let int = int
+        let string = String(int)
+        return string.count
+    }
     
     
     //----------------------------------------------
@@ -511,7 +530,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     func setupCurrentLabel() {
         currentLabel.textAlignment = .center
-//        currentLabel.backgroundColor = .red
         currentLabel.anchor(top: currentWeatherView.topAnchor,
                             bottom: currentTempLabel.topAnchor,
                             leading: currentWeatherView.leadingAnchor,
@@ -522,6 +540,184 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             paddingRight: view.frame.width / 5,
                             width:  currentWeatherView.frame.width,
                             height: 32)
+    }
+    
+    //----------------------------------------------
+    
+    func setupStatusIcon() {
+        var iconImageName = weatherIconString ?? ""
+        let hour = Calendar.current.component(.hour, from: Date())
+        
+        switch iconImageName {
+        case "Sunny":
+            iconImageName = iconStrings.sunIcon
+            
+        case "Clear":
+            iconImageName = iconStrings.moonIcon
+            
+        case "Partly cloudy":
+            switch hour {
+            case 6..<19:
+                iconImageName = iconStrings.sunCloudIcon
+            default:
+                iconImageName = iconStrings.cloudMoonIcon
+            }
+            
+        case "Cloudy":
+            iconImageName = iconStrings.twoCloudsIcon
+            
+        case "Overcast":
+            iconImageName = iconStrings.twoCloudsIcon
+            
+        case "Mist":
+            iconImageName = iconStrings.fogIcon
+            
+        case "Patchy rain possible":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Patchy snow possible":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Patchy sleet possible":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Patchy freezing drizzle possible":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Thundery outbreaks possible":
+            iconImageName = iconStrings.thunderStormIcon
+            
+        case "Blowing snow":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Blizzard":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Fog":
+            iconImageName = iconStrings.fogIcon
+            
+        case "Freezing fog":
+            iconImageName = iconStrings.fogIcon
+            
+        case "Patchy light drizzle":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Light drizzle":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Freezing drizzle":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Heavy freezing drizzle":
+            iconImageName = iconStrings.threeRainIcon
+            
+        case "Patchy light rain":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Light rain":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Moderate rain at times":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Moderate rain":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Heavy rain at times":
+            iconImageName = iconStrings.threeRainIcon
+            
+        case "Heavy rain":
+            iconImageName = iconStrings.threeRainIcon
+            
+        case "Light freezing rain":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Moderate or heavy freezing rain":
+            iconImageName = iconStrings.threeRainIcon
+            
+        case "Light sleet":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Moderate or heavy sleet":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Patchy light snow":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Light snow":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Patchy moderate snow":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Moderate snow":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Patchy heavy snow":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Heavy snow":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Ice pellets":
+            iconImageName = iconStrings.snowDotsIcon
+            
+        case "Light rain shower":
+            iconImageName = iconStrings.singleRainIcon
+            
+        case "Moderate or heavy rain shower":
+            iconImageName = iconStrings.threeRainIcon
+            
+        case "Torrential rain shower":
+            iconImageName = iconStrings.windCloudRainIcon
+            
+        case "Light sleet showers":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Moderate or heavy sleet showers":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Light snow showers":
+            iconImageName = iconStrings.singleSnowFlakeIcon
+            
+        case "Moderate or heavy snow showers":
+            iconImageName = iconStrings.threeSnowFlakesIcon
+            
+        case "Light showers of ice pellets":
+            iconImageName = iconStrings.snowDotsIcon
+            
+        case "Moderate or heavy showers of ice pellets":
+            iconImageName = iconStrings.snowDotsIcon
+            
+        case "Patchy light rain with thunder":
+            iconImageName = iconStrings.thunderStormIcon
+            
+        case "Moderate or heavy rain with thunder":
+            iconImageName = iconStrings.heavyThunderStormsIcon
+            
+        case "Patchy light snow with thunder":
+            iconImageName = iconStrings.thunderStormIcon
+            
+        case "Moderate or heavy snow with thunder":
+            iconImageName = iconStrings.heavyThunderStormsIcon
+            
+        default:
+            iconImageName = ""
+        }
+        
+        
+        weatherStatusIcon.image = UIImage(named: iconImageName)
+        weatherStatusIcon.contentMode = .scaleAspectFill
+        weatherStatusIcon.contentMode = .scaleAspectFit
+        
+        weatherStatusIcon.anchor(top: currentWeatherView.bottomAnchor,
+                                 bottom: cityNameLabel.topAnchor,
+                                 leading: safeArea.leadingAnchor,
+                                 trailing: safeArea.trailingAnchor,
+                                 paddingTop: 16,
+                                 paddingBottom: 0,
+                                 paddingLeft: view.frame.width / 10,
+                                 paddingRight: view.frame.width / 10)
     }
     
     //----------------------------------------------
@@ -564,6 +760,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    func fetchIcon(searchTerm: String) {
+        WeatherController.shared.fetchIcon(searchTerm: searchTerm) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let condition):
+                    self.weatherIconString = condition.text
+                    self.setupViews()
+                    
+                case .failure(let error):
+                    print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
+                }
+            }
+        }
+    }
+    
     func fetchForcast(searchTerm: String) {
         WeatherController.shared.fetchForcast(searchTerm: searchTerm) { result in
             DispatchQueue.main.async {
@@ -590,6 +801,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchTerm = locationLatAndLong
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
+        fetchIcon(searchTerm: searchTerm!)
 //        fetchForcast(searchTerm: searchTerm!)
         setupViews()
         locationManager.stopUpdatingLocation()
@@ -600,6 +812,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         searchTerm = self.searchBarTF.text
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
+        fetchIcon(searchTerm: searchTerm!)
         locationManager.stopUpdatingLocation()
 //        fetchForcast(searchTerm: searchTerm!)
     }
