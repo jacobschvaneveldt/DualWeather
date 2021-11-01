@@ -17,7 +17,10 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green2 )
         searchButton.addTarget(self, action: #selector(searchButtonPressed), for: .touchUpInside)
         forecastButton.addTarget(self, action: #selector(forecastButtonPressed), for: .touchUpInside)
+        let viewTapped = UITapGestureRecognizer(target: self, action: #selector(forecastBackgroundViewPressed))
+        forecastBackgroundView.addGestureRecognizer(viewTapped)
         addAllSubviews()
+        setupCurrentWeatherView()
         setupSearchHorSV()
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
@@ -30,6 +33,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        forecastTableView.delegate = self
+        forecastTableView.dataSource = self
     }
     
     //MARK: - PROPERTIES
@@ -98,7 +103,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     private let searchBarTF: UITextField = {
         let tf = UITextField()
-        tf.autocapitalizationType = UITextAutocapitalizationType.none
         tf.attributedPlaceholder = NSAttributedString(string: weatherStrings.sbPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: UIColor(named: weatherStrings.colorScheme1Yellow)!])
         tf.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)!
         tf.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
@@ -222,6 +226,27 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         return iv
     }()
     
+    //----------------------------------------------
+    
+    private let forecastTableView: UITableView = {
+       let tv = UITableView()
+        tv.backgroundColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        tv.layer.cornerRadius = 24
+        tv.register(ForecastTableViewCell.self, forCellReuseIdentifier: ForecastTableViewCell.identifier)
+        tv.largeContentTitle = "forecast"
+        
+        return tv
+    }()
+    
+    //----------------------------------------------
+    
+    private let forecastBackgroundView: UIView = {
+        let view = UIView()
+        view.alpha = 0.9
+        
+        return view
+    }()
+    
     //MARK: - FUNCTIONS
     func addAllSubviews() {
         view.addSubview(currentWeatherView)
@@ -236,10 +261,11 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(humidityLabel)
         view.addSubview(windDirectionUIImage)
         view.addSubview(weatherStatusIcon)
+        view.addSubview(forecastBackgroundView)
+        view.addSubview(forecastTableView)
     }
     
     func setupViews() {
-        setupCurrentWeatherView()
         setupCurrentTempLabel()
         setupForecastButton()
         setupForecastButtonView()
@@ -253,7 +279,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     //----------------------------------------------
-    //JSWAN - get opinion on centered at line or all text centered
+    
     func setupCurrentTempLabel() {
         let currentCTemp = Int(cTemp ?? 0)
         let currentFTemp = Int(fTemp ?? 0)
@@ -334,7 +360,15 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             windDirectionImage = "arrow.up.circle.fill"
             print(windDirectionImage)
             
+        case "NNE":
+            windDirectionImage = "arrow.up.right.circle.fill"
+            print(windDirectionImage)
+            
         case "NE":
+            windDirectionImage = "arrow.up.right.circle.fill"
+            print(windDirectionImage)
+            
+        case "ENE":
             windDirectionImage = "arrow.up.right.circle.fill"
             print(windDirectionImage)
             
@@ -342,7 +376,15 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             windDirectionImage = "arrow.right.circle.fill"
             print(windDirectionImage)
             
+        case "ESE":
+            windDirectionImage = "arrow.down.right.circle.fill"
+            print(windDirectionImage)
+            
         case "SE":
+            windDirectionImage = "arrow.down.right.circle.fill"
+            print(windDirectionImage)
+            
+        case "SSE":
             windDirectionImage = "arrow.down.right.circle.fill"
             print(windDirectionImage)
             
@@ -350,20 +392,39 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             windDirectionImage = "arrow.down.circle.fill"
             print(windDirectionImage)
             
+        case "SSW":
+            windDirectionImage = "arrow.down.left.circle.fill"
+            print(windDirectionImage)
+
+            
         case "SW":
             windDirectionImage = "arrow.down.left.circle.fill"
             print(windDirectionImage)
+            
+        case "WSW":
+            windDirectionImage = "arrow.down.left.circle.fill"
+            print(windDirectionImage)
+
             
         case "W":
             windDirectionImage = "arrow.left.circle.fill"
             print(windDirectionImage)
             
+        case "WNW":
+            windDirectionImage = "arrow.up.left.circle.fill"
+            print(windDirectionImage)
+
+            
         case "NW":
             windDirectionImage = "arrow.up.left.circle.fill"
             print(windDirectionImage)
             
+        case "NNW":
+            windDirectionImage = "arrow.up.left.circle.fill"
+            print(windDirectionImage)
+
         default:
-            windDirectionImage = "arrow.up.circle.fill"
+            windDirectionImage = "circle.fill"
             print(windDirectionImage)
         }
         
@@ -377,7 +438,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         
         windSpeedLabel.attributedText = myString
         windSpeedLabel.textAlignment = .center
-//        windSpeedLabel.backgroundColor = .blue
         windSpeedLabel.sizeToFit()
         windSpeedLabel.anchor(top: nil,
                               bottom: currentWeatherView.bottomAnchor,
@@ -388,19 +448,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                               paddingLeft: 0,
                               paddingRight: 0,
                               height: 20)
-        
-//        windDirectionUIImage.backgroundColor = .yellow
-//        windDirectionUIImage.anchor(top: nil,
-//                                    bottom: currentWeatherView.bottomAnchor,
-//                                    leading: windSpeedLabel.trailingAnchor,
-//                                    trailing: currentWeatherView.trailingAnchor,
-//                                    paddingTop: 0,
-//                                    paddingBottom: -view.frame.height / 22,
-//                                    paddingLeft: 0,
-//                                    paddingRight: 0,
-//                                    width: 18,
-//                                    height: 18)
-//        windDirectionUIImage.image = UIImage(systemName: windDirectionImage)
     }
     
     func setupWindSV() {
@@ -721,6 +768,25 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     //----------------------------------------------
+    func setupForecastTableView() {
+        forecastTableView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: view.frame.height / 1.3)
+        forecastTableView.separatorStyle = .none
+        
+    }
+    
+    func setupForecastBackgroundView() {
+        forecastBackgroundView.backgroundColor = .black.withAlphaComponent(0.9)
+        forecastBackgroundView.anchor(top: view.topAnchor,
+                                      bottom: view.bottomAnchor,
+                                      leading: view.leadingAnchor,
+                                      trailing: view.trailingAnchor,
+                                      paddingTop: 0,
+                                      paddingBottom: 0,
+                                      paddingLeft: 0,
+                                      paddingRight: 0)
+    }
+    
+    //----------------------------------------------
     
     func fetchWeather(searchTerm: String) {
         WeatherController.shared.fetchWeather(searchTerm: searchTerm) { result in
@@ -802,7 +868,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         fetchWeather(searchTerm: searchTerm!)
         fetchName(searchTerm: searchTerm!)
         fetchIcon(searchTerm: searchTerm!)
-//        fetchForcast(searchTerm: searchTerm!)
         setupViews()
         locationManager.stopUpdatingLocation()
         }
@@ -814,11 +879,37 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         fetchName(searchTerm: searchTerm!)
         fetchIcon(searchTerm: searchTerm!)
         locationManager.stopUpdatingLocation()
-//        fetchForcast(searchTerm: searchTerm!)
     }
     
     @objc func forecastButtonPressed() {
-        print("You pushed the button congrats")
+
+        setupForecastBackgroundView()
+        setupForecastTableView()
+        
+        forecastBackgroundView.alpha = 0
+        UIView.animate(withDuration: 0.5,
+                       delay: 0,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 1,
+                       options: .curveEaseOut,
+                       animations: {self.forecastBackgroundView.alpha = 0.8
+            self.forecastTableView.frame = CGRect(x: self.view.frame.width / 20, y: self.view.frame.height - self.view.frame.height / 1.3, width: self.view.frame.width - self.view.frame.width / 10, height: self.view.frame.height / 1.2)
+                                    },
+                       completion: nil)
+
+        
+    }
+    
+    @objc func forecastBackgroundViewPressed() {
+        UIView.animate(withDuration: 0.5,
+                       delay: 0,
+                       usingSpringWithDamping: 1,
+                       initialSpringVelocity: 1,
+                       options: .curveEaseOut,
+                       animations: {self.forecastBackgroundView.alpha = 0
+            self.forecastTableView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: self.view.frame.height / 1.3)
+                                    },
+                       completion: nil)
     }
     
     @objc func dismissKeyboard() {
@@ -826,3 +917,17 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
 }//End of class
+
+extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        7
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        
+        return cell
+    }
+    
+}
