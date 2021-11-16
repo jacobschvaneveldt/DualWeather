@@ -47,4 +47,10 @@ struct ForcastNumbers: Codable {
     let maxtemp_f: Double
     let mintemp_c: Double
     let mintemp_f: Double
+    let condition: ForecastCondition
 }
+
+struct ForecastCondition: Codable {
+    let text: String
+}
+

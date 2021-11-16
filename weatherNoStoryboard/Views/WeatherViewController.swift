@@ -54,6 +54,13 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     var windKph: Double?
     var windDirection: String?
     var weatherIconString: String?
+    var forecastDates: [String] = []
+    var forecastHighCTemp: [Double] = []
+    var forecastHighFTemp: [Double] = []
+    var forecastLowCTemp: [Double] = []
+    var forecastLowFTemp: [Double] = []
+    var forecastIconString: [String] = []
+
     
     //MARK: - VIEWS
     private let currentTempLabel: UILabel = {
@@ -230,7 +237,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     private let forecastTableView: UITableView = {
        let tv = UITableView()
-        tv.backgroundColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        tv.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
         tv.layer.cornerRadius = 24
         tv.register(ForecastTableViewCell.self, forCellReuseIdentifier: ForecastTableViewCell.identifier)
         tv.largeContentTitle = "forecast"
@@ -770,7 +777,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     //----------------------------------------------
     func setupForecastTableView() {
         forecastTableView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: view.frame.height / 1.3)
-        forecastTableView.separatorStyle = .none
+        forecastTableView.separatorStyle = .singleLine
         
     }
     
@@ -794,14 +801,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                 switch result {
                 case .success(let numbers):
                     print(numbers)
-                    self.cTemp = numbers.temp_c
-                    self.fTemp = numbers.temp_f
-                    self.cFeelsLike = numbers.feelslike_c
-                    self.fFeelsLike = numbers.feelslike_f
-                    self.humidity = numbers.humidity
-                    self.windKph = numbers.wind_kph
-                    self.windMph = numbers.wind_mph
-                    self.windDirection = numbers.wind_dir
+                    self.cTemp = numbers.current.temp_c
+                    self.fTemp = numbers.current.temp_f
+                    self.cFeelsLike = numbers.current.feelslike_c
+                    self.fFeelsLike = numbers.current.feelslike_f
+                    self.humidity = numbers.current.humidity
+                    self.windKph = numbers.current.wind_kph
+                    self.windMph = numbers.current.wind_mph
+                    self.windDirection = numbers.current.wind_dir
+                    self.cityName = numbers.location.name
+                    self.weatherIconString = numbers.current.condition.text
                     self.setupViews()
                     
                 case .failure(let error):
@@ -810,43 +819,35 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
     }
-    
-    func fetchName(searchTerm: String) {
-        WeatherController.shared.fetchName(searchTerm: searchTerm) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let name):
-                    self.cityName = name.name
-                    self.setupViews()
-                    
-                case .failure(let error):
-                    print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                }
-            }
-        }
-    }
-    
-    func fetchIcon(searchTerm: String) {
-        WeatherController.shared.fetchIcon(searchTerm: searchTerm) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let condition):
-                    self.weatherIconString = condition.text
-                    self.setupViews()
-                    
-                case .failure(let error):
-                    print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                }
-            }
-        }
-    }
-    
-    func fetchForcast(searchTerm: String) {
+        
+    func fetchForecast(searchTerm: String) {
         WeatherController.shared.fetchForcast(searchTerm: searchTerm) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let forcastNumbers):
-                    print("------------------------THIS IS THE FORCAST NUMBERS \(forcastNumbers) ---------------------------")
+                case .success(let ForecastWeatherNumbers):
+                    
+                    for date in ForecastWeatherNumbers {
+                        let date = date.date
+                        self.forecastDates.append(date)
+                        print("mkb\(self.forecastDates)")
+                    }
+                    
+                    for day in ForecastWeatherNumbers {
+                        let number = day.day
+                        self.forecastHighCTemp.append(number.maxtemp_c)
+                        self.forecastHighFTemp.append(number.maxtemp_f)
+                        self.forecastLowCTemp.append(number.mintemp_c)
+                        self.forecastLowFTemp.append(number.mintemp_f)
+                        print("lookhere\(self.forecastHighCTemp)\(self.forecastHighFTemp)\(self.forecastLowCTemp)\(self.forecastLowFTemp)")
+                    }
+                    
+                    for icon in ForecastWeatherNumbers{
+                        let iconString = icon.day.condition.text
+                        self.forecastIconString.append(iconString)
+                        print("12341234\(self.forecastIconString)")
+                    }
+                    
+                    print("------------------------THIS IS THE FORCAST NUMBERS \(ForecastWeatherNumbers) ---------------------------")
                     
                 case .failure(let error):
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
@@ -866,23 +867,29 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         guard locationLatAndLong != nil else {return}
         searchTerm = locationLatAndLong
         fetchWeather(searchTerm: searchTerm!)
-        fetchName(searchTerm: searchTerm!)
-        fetchIcon(searchTerm: searchTerm!)
-        setupViews()
+        fetchForecast(searchTerm: searchTerm!)
         locationManager.stopUpdatingLocation()
         }
     
     @objc func searchButtonPressed() {
-        guard self.searchBarTF.text != nil else {return}
-        searchTerm = self.searchBarTF.text
-        fetchWeather(searchTerm: searchTerm!)
-        fetchName(searchTerm: searchTerm!)
-        fetchIcon(searchTerm: searchTerm!)
-        locationManager.stopUpdatingLocation()
+        if searchBarTF.text?.isEmpty ?? true {
+            print("tf is empty")
+        } else {
+            searchTerm = self.searchBarTF.text
+            fetchWeather(searchTerm: searchTerm!)
+            forecastDates.removeAll()
+            forecastHighCTemp.removeAll()
+            forecastHighFTemp.removeAll()
+            forecastLowCTemp.removeAll()
+            forecastLowFTemp.removeAll()
+            forecastIconString.removeAll()
+            fetchForecast(searchTerm: searchTerm!)
+            locationManager.stopUpdatingLocation()
+            forecastTableView.reloadData()
+        }
     }
     
     @objc func forecastButtonPressed() {
-
         setupForecastBackgroundView()
         setupForecastTableView()
         
@@ -896,8 +903,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             self.forecastTableView.frame = CGRect(x: self.view.frame.width / 20, y: self.view.frame.height - self.view.frame.height / 1.3, width: self.view.frame.width - self.view.frame.width / 10, height: self.view.frame.height / 1.2)
                                     },
                        completion: nil)
-
-        
     }
     
     @objc func forecastBackgroundViewPressed() {
@@ -920,14 +925,61 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
 
 extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let _view = UIView()
+        let lbl = UILabel()
+        
+        lbl.text = "forecast"
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.font = UIFont(name: weatherStrings.avenirBook, size: 36)
+        lbl.frame = CGRect(x: 16, y: _view.frame.height / 2, width: view.frame.width, height: 50)
+        lbl.clipsToBounds = true
+        
+        _view.addSubview(lbl)
+        _view.backgroundColor = UIColor(named: weatherStrings.colorScheme1Green3)
+        return _view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        7
+        return forecastLowFTemp.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.identifier, for: indexPath) as? ForecastTableViewCell else {return UITableViewCell()}
+        
+        let highC = forecastHighCTemp[indexPath.row]
+        let highF = forecastHighFTemp[indexPath.row]
+        let lowC = forecastLowCTemp[indexPath.row]
+        let lowF = forecastLowFTemp[indexPath.row]
+        let iconString = forecastIconString[indexPath.row]
+        let _day = forecastDates[indexPath.row]
+        
+        cell.setHighNumbers(cTemp: highC, fTemp: highF)
+        cell.setLowNumbers(cTemp: lowC, fTemp: lowF)
+        cell.setWeatherIcon(iconString: iconString)
+        cell.setDayLabel(day: _day)
+        print("4321\(iconString)")
+        cell.delegate = self
         
         return cell
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 160
+    }
+    
+}//End of extension
+
+extension WeatherViewController: cellUpdate {
+    func updateTableView() {
+        forecastTableView.reloadData()
+    }
 }
