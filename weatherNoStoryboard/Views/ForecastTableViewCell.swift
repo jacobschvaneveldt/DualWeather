@@ -7,9 +7,7 @@
 
 import UIKit
 
-protocol cellUpdate: AnyObject {
-    func updateTableView()
-}
+protocol cellUpdate: AnyObject {}
 
 class ForecastTableViewCell: UITableViewCell {
     
@@ -312,10 +310,6 @@ class ForecastTableViewCell: UITableViewCell {
     
     func setDayLabel(day: String) {
         dayLabel.text = day
-    }
-    
-    func updateViews() {
-        delegate?.updateTableView()
     }
     
     func setupDayLabel() {

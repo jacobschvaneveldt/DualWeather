@@ -30,7 +30,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
         }
-//        callUsersLocation()
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
@@ -820,8 +819,11 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                                  paddingBottom: 0,
                                  paddingLeft: view.frame.width / 10,
                                  paddingRight: view.frame.width / 10)
-        loadingView.isHidden = true
-        loadingLabel.isHidden = true
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.loadingView.alpha = 0
+            self.loadingLabel.alpha = 0
+        })
     }
     
     //----------------------------------------------
@@ -1033,8 +1035,4 @@ extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
     
 }//End of extension
 
-extension WeatherViewController: cellUpdate {
-    func updateTableView() {
-        forecastTableView.reloadData()
-    }
-}
+extension WeatherViewController: cellUpdate {}
