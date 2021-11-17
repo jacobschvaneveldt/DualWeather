@@ -43,7 +43,6 @@ class WeatherController {
             
             do {
                 let tlo = try JSONDecoder().decode(Weather.self, from: data)
-                let numbers = tlo.current
                 
                 completion(.success(tlo))
             } catch {
@@ -65,7 +64,6 @@ class WeatherController {
         let alertsQuery = URLQueryItem(name: weatherStrings.alerts, value: "no")
         
         components?.queryItems = [apiQuery, searchQuery, daysQuery, aqiQuery, alertsQuery]
-        
         
         guard let finalURL = components?.url else {return completion(.failure(.invalidURL))}
         

@@ -92,20 +92,7 @@ class ForecastTableViewCell: UITableViewCell {
     
     //MARK: - PROPERTIES
     static let identifier = "ForecastTableViewCell"
-    weak var delegate: cellUpdate?
-    var forecast: Forecast? {
-        didSet {
-            guard let forecast = forecast else {return}
-            updateTableViewWithForecast(forecast: forecast)
-        }
-    }
-    
-    func updateTableViewWithForecast(forecast: Forecast) {
-        highNumbersLabel.text = "\(forecast.highC) | \(forecast.highF)"
-        lowNumbersLabel.text = "\(forecast.lowC) | \(forecast.lowF)"
-        
-    }
-    
+    weak var delegate: cellUpdate?    
     
     //viewDidLoad
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

@@ -7,22 +7,6 @@
 
 import Foundation
 
-/*
- family Name: Avenir
- font Name: Avenir-Book a
- font Name: Avenir-Roman
- font Name: Avenir-BookOblique
- font Name: Avenir-Oblique
- font Name: Avenir-Light a
- font Name: Avenir-LightOblique
- font Name: Avenir-Medium a
- font Name: Avenir-MediumOblique
- font Name: Avenir-Heavy a
- font Name: Avenir-HeavyOblique
- font Name: Avenir-Black
- font Name: Avenir-BlackOblique
- */
-
 struct weatherStrings {
     //MARK: - WEATHER APIS
     static let baseURL = URL(string: "http://api.weatherapi.com/v1/forecast.json?")
