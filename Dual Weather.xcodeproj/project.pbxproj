@@ -23,7 +23,7 @@
 
 /* Begin PBXFileReference section */
 		391F502B26FD69B30064FCA8 /* UIVIewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVIewExtension.swift; sourceTree = "<group>"; };
-		392AB56F26F95EFA006381BA /* weatherNoStoryboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = weatherNoStoryboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		392AB56F26F95EFA006381BA /* Dual Weather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dual Weather.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		392AB57226F95EFA006381BA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		392AB57426F95EFA006381BA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		392AB57626F95EFA006381BA /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 		392AB57026F95EFA006381BA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				392AB56F26F95EFA006381BA /* weatherNoStoryboard.app */,
+				392AB56F26F95EFA006381BA /* Dual Weather.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -152,9 +152,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		392AB56E26F95EFA006381BA /* weatherNoStoryboard */ = {
+		392AB56E26F95EFA006381BA /* Dual Weather */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 392AB58326F95EFC006381BA /* Build configuration list for PBXNativeTarget "weatherNoStoryboard" */;
+			buildConfigurationList = 392AB58326F95EFC006381BA /* Build configuration list for PBXNativeTarget "Dual Weather" */;
 			buildPhases = (
 				392AB56B26F95EFA006381BA /* Sources */,
 				392AB56C26F95EFA006381BA /* Frameworks */,
@@ -164,9 +164,9 @@
 			);
 			dependencies = (
 			);
-			name = weatherNoStoryboard;
+			name = "Dual Weather";
 			productName = weatherNoStoryboard;
-			productReference = 392AB56F26F95EFA006381BA /* weatherNoStoryboard.app */;
+			productReference = 392AB56F26F95EFA006381BA /* Dual Weather.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -183,7 +183,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 392AB56A26F95EFA006381BA /* Build configuration list for PBXProject "weatherNoStoryboard" */;
+			buildConfigurationList = 392AB56A26F95EFA006381BA /* Build configuration list for PBXProject "Dual Weather" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -196,7 +196,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				392AB56E26F95EFA006381BA /* weatherNoStoryboard */,
+				392AB56E26F95EFA006381BA /* Dual Weather */,
 			);
 		};
 /* End PBXProject section */
@@ -402,7 +402,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		392AB56A26F95EFA006381BA /* Build configuration list for PBXProject "weatherNoStoryboard" */ = {
+		392AB56A26F95EFA006381BA /* Build configuration list for PBXProject "Dual Weather" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				392AB58126F95EFC006381BA /* Debug */,
@@ -411,7 +411,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		392AB58326F95EFC006381BA /* Build configuration list for PBXNativeTarget "weatherNoStoryboard" */ = {
+		392AB58326F95EFC006381BA /* Build configuration list for PBXNativeTarget "Dual Weather" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				392AB58426F95EFC006381BA /* Debug */,

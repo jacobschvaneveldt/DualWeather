@@ -20,8 +20,10 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         let viewTapped = UITapGestureRecognizer(target: self, action: #selector(forecastBackgroundViewPressed))
         forecastBackgroundView.addGestureRecognizer(viewTapped)
         addAllSubviews()
+        hideSubviewsDuringLoading()
         setupCurrentWeatherView()
         setupSearchHorSV()
+        setupIfLocationIsntEnabled()
         setupLoadingView()
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
@@ -35,7 +37,31 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         view.addGestureRecognizer(tap)
         forecastTableView.delegate = self
         forecastTableView.dataSource = self
+        if loadingView.isHidden == false {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                self.loadingView.isHidden = true
+                self.loadingLabel.isHidden = true
+            }
+        }
+        addObservers()
+//        removeObservers()
     }
+    
+    fileprivate func addObservers() {
+          NotificationCenter.default.addObserver(self,
+                                                 selector: #selector(applicationDidBecomeActive),
+                                                 name: UIApplication.didBecomeActiveNotification,
+                                                 object: nil)
+        }
+
+    fileprivate func removeObservers() {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+        }
+
+    @objc fileprivate func applicationDidBecomeActive() {
+        fetchWeather(searchTerm: searchTerm!)
+        fetchForecast(searchTerm: searchTerm!)
+        }
     
     //MARK: - PROPERTIES
     var locationManager = CLLocationManager()
@@ -65,6 +91,18 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     
     //MARK: - VIEWS
+    private let ifLocationIsntEnabledLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "if you do not have location services enabled, please consider enabling them to recieve the weather of your current location, or enter a city in the search bar above"
+        lbl.font = UIFont(name: weatherStrings.avenirLight, size: 24)
+        lbl.textColor = UIColor(named: weatherStrings.colorScheme1Yellow)
+        lbl.adjustsFontSizeToFitWidth = true
+        lbl.numberOfLines = 0
+        lbl.textAlignment = .center
+        
+        return lbl
+    }()
+    
     private let currentTempLabel: UILabel = {
         let lbl = UILabel()
         lbl.backgroundColor = .clear
@@ -163,7 +201,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         btn.layer.cornerRadius = 24
         btn.titleLabel?.font = UIFont(name: weatherStrings.avenirBook, size: 36)
         btn.titleLabel?.layoutMargins = UIEdgeInsets(top: 0, left: 100, bottom: 0, right: 0)
-        
         
         return btn
     }()
@@ -281,6 +318,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     func addAllSubviews() {
         view.addSubview(currentWeatherView)
         view.addSubview(searchHorSV)
+        view.addSubview(ifLocationIsntEnabledLabel)
         view.addSubview(windSpeedLabel)
         view.addSubview(cityNameLabel)
         view.addSubview(forecastButtonView)
@@ -308,6 +346,56 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         setupCurrentFeelsLIkeLabel()
         setupHumidityLabel()
         setupStatusIcon()
+    }
+    
+    //----------------------------------------------
+    
+    func hideSubviewsDuringLoading() {
+        windSpeedLabel.isHidden = true
+        cityNameLabel.isHidden = true
+        forecastButtonView.isHidden = true
+        forecastButton.isHidden = true
+        currentLabel.isHidden = true
+        currentTempLabel.isHidden = true
+        currentFeelsLikeLabel.isHidden = true
+        humidityLabel.isHidden = true
+        windDirectionUIImage.isHidden = true
+        weatherStatusIcon.isHidden = true
+        forecastBackgroundView.isHidden = true
+        forecastTableView.isHidden = true
+    }
+    
+    //----------------------------------------------
+    
+    func showSubviewsAfterLoading() {
+        windSpeedLabel.isHidden = false
+        cityNameLabel.isHidden = false
+        forecastButtonView.isHidden = false
+        forecastButton.isHidden = false
+        currentLabel.isHidden = false
+        currentTempLabel.isHidden = false
+        currentFeelsLikeLabel.isHidden = false
+        humidityLabel.isHidden = false
+        windDirectionUIImage.isHidden = false
+        weatherStatusIcon.isHidden = false
+        forecastBackgroundView.isHidden = false
+        forecastTableView.isHidden = false
+
+    }
+    
+    //----------------------------------------------
+    
+    func setupIfLocationIsntEnabled() {
+        ifLocationIsntEnabledLabel.anchor(top: searchHorSV.bottomAnchor,
+                                         bottom: nil,
+                                         leading: safeArea.leadingAnchor,
+                                         trailing: safeArea.trailingAnchor,
+                                         paddingTop: view.frame.height / 18,
+                                         paddingBottom: 0,
+                                         paddingLeft: view.frame.width / 10,
+                                         paddingRight:  view.frame.width / 10,
+                                         width: view.frame.width,
+                                         height: view.frame.height / 3)
     }
     
     //----------------------------------------------
@@ -369,8 +457,14 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     func setupCurrentFeelsLIkeLabel() {
         let currentCTemp = Int(cFeelsLike ?? 0)
         let currentFTemp = Int(fFeelsLike ?? 0)
+        let numberOfCTempInts = intToStringCount(int: currentCTemp)
         
-        currentFeelsLikeLabel.text = "feels like: \(currentCTemp) | \(currentFTemp)"
+        if numberOfCTempInts == 1 {
+            currentFeelsLikeLabel.text = "feels like: 0\(currentCTemp) | \(currentFTemp)"
+        } else {
+            currentFeelsLikeLabel.text = "feels like: \(currentCTemp) | \(currentFTemp)"
+        }
+        
         currentFeelsLikeLabel.textAlignment = .center
         currentFeelsLikeLabel.anchor(top: currentTempLabel.bottomAnchor,
                                      bottom: humidityLabel.topAnchor,
@@ -820,10 +914,12 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                                  paddingLeft: view.frame.width / 10,
                                  paddingRight: view.frame.width / 10)
         
+        ifLocationIsntEnabledLabel.isHidden = true
         UIView.animate(withDuration: 0.3, animations: {
             self.loadingView.alpha = 0
             self.loadingLabel.alpha = 0
         })
+        showSubviewsAfterLoading()
     }
     
     //----------------------------------------------
