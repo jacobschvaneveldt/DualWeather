@@ -43,27 +43,38 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                 self.loadingLabel.isHidden = true
             }
         }
-        addObservers()
-//        removeObservers()
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidbecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
-    fileprivate func addObservers() {
-          NotificationCenter.default.addObserver(self,
-                                                 selector: #selector(applicationDidBecomeActive),
-                                                 name: UIApplication.didBecomeActiveNotification,
-                                                 object: nil)
-        }
-
-    fileprivate func removeObservers() {
-            NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
-        }
-
-    @objc fileprivate func applicationDidBecomeActive() {
-        fetchWeather(searchTerm: searchTerm!)
-        fetchForecast(searchTerm: searchTerm!)
-        }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        print("didbecomeDeactive")
+    }
+    
     
     //MARK: - PROPERTIES
+    
+    @objc func appDidbecomeActive(notification: Notification) {
+        if self.searchTerm != nil && self.searchTerm != "" {
+            
+            callUsersLocation()
+            
+            print("searchTerm \(searchTerm!)")
+            fetchWeather(searchTerm: searchTerm!)
+            forecastDates.removeAll()
+            forecastHighCTemp.removeAll()
+            forecastHighFTemp.removeAll()
+            forecastLowCTemp.removeAll()
+            forecastLowFTemp.removeAll()
+            forecastIconString.removeAll()
+            fetchForecast(searchTerm: searchTerm!)
+            locationManager.stopUpdatingLocation()
+            forecastTableView.reloadData()
+        } else {
+            print("arstarstarst")
+        }
+    }
+    
     var locationManager = CLLocationManager()
     var cTemp: Double?
     var fTemp: Double?
@@ -1030,6 +1041,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             print("tf is empty")
         } else {
             searchTerm = self.searchBarTF.text
+            print("searchButton searchTerm \(searchTerm)")
             fetchWeather(searchTerm: searchTerm!)
             forecastDates.removeAll()
             forecastHighCTemp.removeAll()
